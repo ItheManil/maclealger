@@ -65,7 +65,7 @@ const RegistrationForm = () => {
   const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
 
   // Check remaining spots on mount
-  useState(() => {
+  useEffect(() => {
     supabase
       .from('webinar_registrations')
       .select('id', { count: 'exact', head: true })
@@ -76,7 +76,7 @@ const RegistrationForm = () => {
           if (remaining === 0) setIsFull(true);
         }
       });
-  });
+  }, []);
 
   const handleSubmit = async () => {
     setError('');
