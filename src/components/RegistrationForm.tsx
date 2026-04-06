@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,18 +65,17 @@ const RegistrationForm = () => {
   const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
 
   // Check remaining spots on mount
-  useState(() => {
+  useEffect(() => {
     supabase
-      .from('webinar_registrations')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count }) => {
-        if (count !== null) {
+      .rpc('get_registration_count')
+      .then(({ data: count, error: err }) => {
+        if (!err && count !== null) {
           const remaining = Math.max(0, MAX_PARTICIPANTS - count);
           setSpotsLeft(remaining);
           if (remaining === 0) setIsFull(true);
         }
       });
-  });
+  }, []);
 
   const handleSubmit = async () => {
     setError('');
