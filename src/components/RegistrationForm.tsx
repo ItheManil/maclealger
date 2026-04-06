@@ -233,18 +233,6 @@ const RegistrationForm = () => {
         </RadioGroup>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="notes">Précisions (optionnel)</Label>
-        <Textarea
-          id="notes"
-          placeholder="Ajoutez ici une précision sur votre projet si vous le souhaitez."
-          value={form.tel ? '' : ''}
-          onChange={() => undefined}
-          disabled
-          className="hidden"
-        />
-      </div>
-
       <label className="flex items-start gap-3 text-xs leading-relaxed text-[var(--sand-soft)]">
         <Checkbox
           checked={form.rgpd}
