@@ -12,7 +12,7 @@ const SpeakersSection = () => (
     </h2>
     <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-5 mt-14">
       {speakers.map((s) => (
-        <div key={s.initial} className="reveal bg-white border border-[rgba(0,51,38,0.2)] rounded-2xl py-7 px-6 text-center">
+        <div key={s.initial} className="reveal speaker-card-hover bg-white border border-[rgba(0,51,38,0.2)] rounded-2xl py-7 px-6 text-center">
           <div className="w-16 h-16 rounded-full bg-[var(--gold-pale)] border-2 border-[rgba(0,51,38,0.2)] flex items-center justify-center font-heading text-[22px] font-bold text-[var(--gold)] mx-auto mb-4">
             {s.initial}
           </div>

@@ -16,7 +16,7 @@ const WhySection = () => (
     </p>
     <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 mt-14">
       {cards.map((c) => (
-        <div key={c.title} className="reveal bg-white border border-[rgba(0,51,38,0.2)] rounded-2xl py-8 px-7 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,51,38,0.1)]">
+        <div key={c.title} className="reveal why-card-hover bg-white border border-[rgba(0,51,38,0.2)] rounded-2xl py-8 px-7">
           <span className="text-[26px] mb-4 block">{c.icon}</span>
           <p className="text-[15px] font-medium text-[var(--sand)] mb-2">{c.title}</p>
           <p className="text-sm text-[var(--sand-soft)] leading-relaxed">{c.desc}</p>
