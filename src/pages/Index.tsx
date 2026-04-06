@@ -34,7 +34,7 @@ const Index = () => {
     // Assign staggered delays per section
     const sections = mainRef.current.querySelectorAll('section, .stats-bar');
     sections.forEach((section) => {
-      const reveals = section.querySelectorAll('.reveal');
+      const reveals = section.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-fade, .section-line');
       reveals.forEach((el, i) => {
         (el as HTMLElement).dataset.revealDelay = String(i * 100);
         observer.observe(el);
@@ -42,7 +42,7 @@ const Index = () => {
     });
 
     // Also observe any top-level reveals
-    mainRef.current.querySelectorAll(':scope > .reveal').forEach((el) => observer.observe(el));
+    mainRef.current.querySelectorAll(':scope > .reveal, :scope > .reveal-left, :scope > .reveal-right, :scope > .reveal-scale, :scope > .reveal-fade, :scope > .section-line').forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
@@ -67,9 +67,9 @@ const Index = () => {
         /* Variant: slide from left */
         .reveal-left {
           opacity: 0;
-          transform: translateX(-30px);
-          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: translateX(-40px);
+          transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
           will-change: opacity, transform;
         }
         .reveal-left.visible {
@@ -77,17 +77,49 @@ const Index = () => {
           transform: translateX(0);
         }
 
+        /* Variant: slide from right */
+        .reveal-right {
+          opacity: 0;
+          transform: translateX(40px);
+          transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+        .reveal-right.visible {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
         /* Variant: scale up */
         .reveal-scale {
           opacity: 0;
-          transform: scale(0.92);
-          transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: scale(0.88);
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
           will-change: opacity, transform;
         }
         .reveal-scale.visible {
           opacity: 1;
           transform: scale(1);
+        }
+
+        /* Variant: fade only (no movement) */
+        .reveal-fade {
+          opacity: 0;
+          transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity;
+        }
+        .reveal-fade.visible {
+          opacity: 1;
+        }
+
+        /* Section divider line animation */
+        .section-line {
+          width: 0;
+          transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .section-line.visible {
+          width: 100%;
         }
 
         /* Smooth hover transitions for cards */
