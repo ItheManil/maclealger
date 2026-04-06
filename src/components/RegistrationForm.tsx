@@ -54,11 +54,29 @@ const initialForm: FormState = {
   rgpd: false,
 };
 
+const MAX_PARTICIPANTS = 50;
+
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState<FormState>(initialForm);
+  const [isFull, setIsFull] = useState(false);
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
+
+  // Check remaining spots on mount
+  useState(() => {
+    supabase
+      .from('webinar_registrations')
+      .select('id', { count: 'exact', head: true })
+      .then(({ count }) => {
+        if (count !== null) {
+          const remaining = Math.max(0, MAX_PARTICIPANTS - count);
+          setSpotsLeft(remaining);
+          if (remaining === 0) setIsFull(true);
+        }
+      });
+  });
 
   const handleSubmit = async () => {
     setError('');
