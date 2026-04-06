@@ -1,40 +1,28 @@
 
-# Ma Clé à Alger — Webinar Landing Page
 
-## Overview
-Convert the provided HTML landing page into a professional React application, faithfully reproducing the design, layout, animations, and functionality.
+# Add Rate Limiting to Registration Edge Function
 
-## Design System
-- **Fonts**: Playfair Display (headings) + DM Sans (body)
-- **Colors**: Green (#003326) as primary, Sand (#CCB89B) as secondary, Cream (#F5FAF7) background
-- **Style**: Elegant, minimal, luxury real estate feel with rounded cards and subtle gradients
+## Approach
+Use an **in-memory sliding window** rate limiter inside the edge function, keyed by both **IP address** and **email address**. This prevents spam without requiring additional database tables or external services.
 
-## Pages & Sections
+## Limits
+- **Per IP**: Max 3 registrations per 15-minute window
+- **Per email**: Max 1 registration per 60-minute window (prevents duplicate submissions)
 
-### Single Landing Page with these sections:
+## Changes
 
-1. **Fixed Navigation Bar** — Logo "Ma Clé à Alger" + CTA button with blur backdrop
+### 1. Update `supabase/functions/send-confirmation-email/index.ts`
+- Add an in-memory `Map<string, number[]>` to track timestamps of recent requests per key
+- Extract client IP from request headers (`x-forwarded-for` or `x-real-ip`)
+- Before processing, check both IP and email rate limits
+- Return `429 Too Many Requests` with a clear French error message when limits are exceeded
+- Clean up expired entries on each request to prevent memory leaks
 
-2. **Hero Section (split layout)**
-   - Left: Pill badge, large headline, subtitle, event meta badges (date, time, platform, seats), live countdown timer to April 18 2026, limited seats warning
-   - Right: Registration form with fields (prénom, nom, email, phone, country select, project stage radio, interest radio, GDPR checkbox, submit button) + success state
+### 2. Update `src/components/RegistrationForm.tsx`
+- Handle `429` status responses from the edge function gracefully
+- Display a user-friendly message: "Trop de tentatives. Veuillez réessayer dans quelques minutes."
 
-3. **Stats Bar** — 4 stat blocks: 2h content, 3 speakers, 55min Q&A, 100% free
+## Technical Notes
+- In-memory rate limiting resets on cold starts, which is acceptable for this use case — it's a lightweight spam deterrent, not a security-critical system
+- The email-based limit also provides duplicate registration protection at the function level
 
-4. **"Pourquoi ce webinaire"** — 4 feature cards with icons (legal, market, security, Q&A)
-
-5. **Programme** — Timeline-style schedule (6 items from 18:00 to 19:50)
-
-6. **Intervenants** — 3 speaker cards with avatar initials, roles, and bios
-
-7. **FAQ** — 5 accordion items with toggle animation
-
-8. **Footer** — Company info and hashtags
-
-## Functionality
-- **Countdown timer**: Live countdown to April 18, 2026 18:00
-- **Form validation**: Required fields check, email validation, GDPR consent
-- **Form submission**: Show success state on valid submit
-- **FAQ accordion**: Toggle open/close with + rotation
-- **Scroll reveal animations**: Elements fade up on scroll using IntersectionObserver
-- **Responsive design**: 3 breakpoints (900px, 760px, 600px) for mobile adaptation
