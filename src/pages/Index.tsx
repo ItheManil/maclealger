@@ -34,7 +34,7 @@ const Index = () => {
     // Assign staggered delays per section
     const sections = mainRef.current.querySelectorAll('section, .stats-bar');
     sections.forEach((section) => {
-      const reveals = section.querySelectorAll('.reveal');
+      const reveals = section.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-fade, .section-line');
       reveals.forEach((el, i) => {
         (el as HTMLElement).dataset.revealDelay = String(i * 100);
         observer.observe(el);
@@ -42,7 +42,7 @@ const Index = () => {
     });
 
     // Also observe any top-level reveals
-    mainRef.current.querySelectorAll(':scope > .reveal').forEach((el) => observer.observe(el));
+    mainRef.current.querySelectorAll(':scope > .reveal, :scope > .reveal-left, :scope > .reveal-right, :scope > .reveal-scale, :scope > .reveal-fade, :scope > .section-line').forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
