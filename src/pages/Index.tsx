@@ -11,7 +11,19 @@ import Footer from '@/components/Footer';
 
 const Index = () => {
   const mainRef = useRef<HTMLDivElement>(null);
+  const { lang } = useLanguage();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevLangRef = useRef(lang);
 
+  // Trigger fade transition on language change
+  useEffect(() => {
+    if (prevLangRef.current !== lang) {
+      prevLangRef.current = lang;
+      setIsTransitioning(true);
+      const timer = setTimeout(() => setIsTransitioning(false), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [lang]);
   useEffect(() => {
     if (!mainRef.current) return;
 
