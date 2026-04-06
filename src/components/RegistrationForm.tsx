@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -15,22 +14,9 @@ import {
 } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from '@/components/ui/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const countries = ['France', 'Canada', 'Belgique', 'Suisse', 'Royaume-Uni', 'Allemagne', 'Espagne', 'Italie', 'Etats-Unis', 'Autre'];
-
-const projectStages = [
-  { value: 'réflex', label: 'Je réfléchis encore, pas décidé(e)' },
-  { value: 'actif', label: 'Je cherche activement un bien' },
-  { value: 'pret', label: 'Prêt(e) à acheter sous 6 mois' },
-  { value: 'vue', label: "J'ai déjà un bien en vue" },
-];
-
-const interests = [
-  { value: 'légal', label: 'Le cadre légal et les démarches notariales' },
-  { value: 'marché', label: "Comprendre le marché immobilier à Alger" },
-  { value: 'financement', label: "Le financement depuis l'étranger" },
-  { value: 'tout', label: 'Tout — je pars de zéro' },
-];
 
 type FormState = {
   prénom: string;
@@ -63,8 +49,8 @@ const RegistrationForm = () => {
   const [form, setForm] = useState<FormState>(initialForm);
   const [isFull, setIsFull] = useState(false);
   const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
+  const { t } = useLanguage();
 
-  // Check remaining spots on mount
   useEffect(() => {
     supabase
       .rpc('get_registration_count')
@@ -77,21 +63,35 @@ const RegistrationForm = () => {
       });
   }, []);
 
+  const projectStages = [
+    { value: 'réflex', label: t('form.projet.0') },
+    { value: 'actif', label: t('form.projet.1') },
+    { value: 'pret', label: t('form.projet.2') },
+    { value: 'vue', label: t('form.projet.3') },
+  ];
+
+  const interests = [
+    { value: 'légal', label: t('form.interet.0') },
+    { value: 'marché', label: t('form.interet.1') },
+    { value: 'financement', label: t('form.interet.2') },
+    { value: 'tout', label: t('form.interet.3') },
+  ];
+
   const handleSubmit = async () => {
     setError('');
 
     if (!form.prénom.trim() || !form.nom.trim() || !form.email.trim()) {
-      setError('Merci de remplir votre prénom, nom et email.');
+      setError(t('form.error.required'));
       return;
     }
 
     if (!form.email.includes('@') || !form.email.includes('.')) {
-      setError('Adresse email invalide.');
+      setError(t('form.error.email'));
       return;
     }
 
     if (!form.rgpd) {
-      setError("Merci d'accepter les conditions.");
+      setError(t('form.error.rgpd'));
       return;
     }
 
@@ -110,13 +110,13 @@ const RegistrationForm = () => {
 
       if (dbError) {
         if (dbError.code === '23505') {
-          setError('Cette adresse email est déjà inscrite.');
+          setError(t('form.error.duplicate'));
           setLoading(false);
           return;
         }
         if (dbError.message?.includes('registration_full')) {
           setIsFull(true);
-          setError('Désolé, les 50 places sont complètes. Inscrivez-vous à la liste d\'attente en nous contactant par email.');
+          setError(t('form.error.full'));
           setLoading(false);
           return;
         }
@@ -131,7 +131,6 @@ const RegistrationForm = () => {
       });
 
       if (functionError) {
-        // Check for rate limiting (429)
         if (fnData?.error) {
           setError(fnData.error);
           setLoading(false);
@@ -139,13 +138,13 @@ const RegistrationForm = () => {
         }
         console.error('Email function error:', functionError);
         toast({
-          title: 'Inscription enregistrée',
-          description: "Votre inscription est bien enregistrée, mais l'email de confirmation n'a pas encore pu être envoyé.",
+          title: t('form.toast.partial.title'),
+          description: t('form.toast.partial.desc'),
         });
       } else {
         toast({
-          title: 'Inscription confirmée',
-          description: 'Votre inscription a bien été enregistrée.',
+          title: t('form.toast.success.title'),
+          description: t('form.toast.success.desc'),
         });
       }
 
@@ -153,7 +152,7 @@ const RegistrationForm = () => {
       setForm(initialForm);
     } catch (err) {
       console.error('Registration error:', err);
-      setError("Une erreur est survenue. Veuillez réessayer.");
+      setError(t('form.error.generic'));
     } finally {
       setLoading(false);
     }
@@ -163,11 +162,8 @@ const RegistrationForm = () => {
     return (
       <div className="text-center py-10 px-5">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-destructive bg-destructive/10 text-[26px]">🚫</div>
-        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">Complet !</p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Les 50 places disponibles ont toutes été réservées.<br /><br />
-          Nous organiserons une prochaine session. Suivez-nous pour être informé(e) en priorité.
-        </p>
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">{t('form.full.title')}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('form.full.desc') }} />
       </div>
     );
   }
@@ -176,13 +172,15 @@ const RegistrationForm = () => {
     return (
       <div className="text-center py-10 px-5">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-primary bg-accent text-[26px] text-primary">✓</div>
-        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">Inscription confirmée !</p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Votre demande a bien été enregistrée.<br /><br />Vous recevrez votre lien Google Meet par email avant le <strong>18 avril 2026</strong>.
-        </p>
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">{t('form.success.title')}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('form.success.desc') }} />
       </div>
     );
   }
+
+  const spotsText = spotsLeft !== null && spotsLeft > 0 && spotsLeft <= 10
+    ? t('form.spots').replace('{n}', String(spotsLeft)).replace(/\{s\}/g, spotsLeft > 1 ? 's' : '')
+    : null;
 
   return (
     <div className="space-y-4">
@@ -194,20 +192,19 @@ const RegistrationForm = () => {
 
       <div className="grid grid-cols-2 gap-3 max-[600px]:grid-cols-1">
         <div className="space-y-2">
-          <Label htmlFor="prenom">Prénom *</Label>
+          <Label htmlFor="prenom">{t('form.prenom')}</Label>
           <Input
             id="prenom"
-            placeholder="Yasmine"
+            placeholder={t('form.prenom.placeholder')}
             value={form.prénom}
             onChange={(e) => setForm({ ...form, prénom: e.target.value })}
           />
         </div>
-
         <div className="space-y-2">
-          <Label htmlFor="nom">Nom *</Label>
+          <Label htmlFor="nom">{t('form.nom')}</Label>
           <Input
             id="nom"
-            placeholder="Benali"
+            placeholder={t('form.nom.placeholder')}
             value={form.nom}
             onChange={(e) => setForm({ ...form, nom: e.target.value })}
           />
@@ -215,32 +212,32 @@ const RegistrationForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email *</Label>
+        <Label htmlFor="email">{t('form.email')}</Label>
         <Input
           id="email"
           type="email"
-          placeholder="vous@email.com"
+          placeholder={t('form.email.placeholder')}
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="telephone">Téléphone (WhatsApp)</Label>
+        <Label htmlFor="telephone">{t('form.tel')}</Label>
         <Input
           id="telephone"
           type="tel"
-          placeholder="+33 6 ..."
+          placeholder={t('form.tel.placeholder')}
           value={form.tel}
           onChange={(e) => setForm({ ...form, tel: e.target.value })}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Pays de résidence</Label>
+        <Label>{t('form.pays')}</Label>
         <Select value={form.pays} onValueChange={(value) => setForm({ ...form, pays: value })}>
           <SelectTrigger>
-            <SelectValue placeholder="— Sélectionnez —" />
+            <SelectValue placeholder={t('form.pays.placeholder')} />
           </SelectTrigger>
           <SelectContent>
             {countries.map((country) => (
@@ -253,7 +250,7 @@ const RegistrationForm = () => {
       </div>
 
       <div className="space-y-3">
-        <Label>Où en êtes-vous dans votre projet ?</Label>
+        <Label>{t('form.projet')}</Label>
         <RadioGroup value={form.projet} onValueChange={(value) => setForm({ ...form, projet: value })} className="gap-2">
           {projectStages.map((stage) => (
             <label
@@ -268,7 +265,7 @@ const RegistrationForm = () => {
       </div>
 
       <div className="space-y-3">
-        <Label>Ce qui m'intéresse le plus</Label>
+        <Label>{t('form.interet')}</Label>
         <RadioGroup value={form.intérêt} onValueChange={(value) => setForm({ ...form, intérêt: value })} className="gap-2">
           {interests.map((interest) => (
             <label
@@ -288,9 +285,7 @@ const RegistrationForm = () => {
           onCheckedChange={(checked) => setForm({ ...form, rgpd: checked === true })}
           className="mt-0.5"
         />
-        <span>
-          J'accepte que mes informations soient utilisées par Oussama Promotion pour recevoir le lien Google Meet et les informations relatives à ce webinaire.
-        </span>
+        <span>{t('form.rgpd')}</span>
       </label>
 
       <Button
@@ -298,11 +293,11 @@ const RegistrationForm = () => {
         disabled={loading || isFull}
         className="mt-2 w-full rounded-xl bg-secondary text-secondary-foreground hover:bg-primary"
       >
-        {loading ? 'Inscription en cours...' : 'Confirmer mon inscription →'}
+        {loading ? t('form.loading') : t('form.submit')}
       </Button>
-      {spotsLeft !== null && spotsLeft > 0 && spotsLeft <= 10 && (
+      {spotsText && (
         <p className="text-center text-xs text-[var(--gold)] font-medium">
-          🔥 Plus que {spotsLeft} place{spotsLeft > 1 ? 's' : ''} disponible{spotsLeft > 1 ? 's' : ''} !
+          🔥 {spotsText}
         </p>
       )}
     </div>
