@@ -1,40 +1,50 @@
 
 
-# Add Dark/Light Toggle Button
+# Add FR/EN Language Toggle Button
 
 ## Overview
-Add a polished dark/light mode toggle to the navbar with smooth transitions, persisted preference via localStorage, and system preference detection.
+Add a language toggle button in the navbar (next to the theme toggle) that switches all page content between French and English. Uses React Context with a translations dictionary — no external library needed, lightweight and fast.
 
-## Changes
+## Architecture
 
-### 1. Create `src/hooks/useTheme.ts`
-- React hook managing `"light" | "dark"` state
-- On mount: check localStorage, fall back to `prefers-color-scheme`
-- Toggle adds/removes `dark` class on `<html>` and saves to localStorage
-- Wrap in a context provider for global access
+### 1. Create `src/i18n/translations.ts`
+A single file containing all translatable strings keyed by section, with `fr` and `en` variants. Covers: Navbar, Hero, StatsBar, WhySection, ProgrammeSection, SpeakersSection, FaqSection, Footer, RegistrationForm, CountdownBlock.
 
-### 2. Add dark mode CSS variables in `src/index.css`
-- Add a `.dark` block with inverted color tokens:
-  - `--background`: dark green-black (~163 40% 8%)
-  - `--foreground`: light cream
-  - `--card`: dark surface
-  - `--cream`: dark background
-  - `--sand`: lighter sand for readability
-  - `--gold-pale`: darker variant
-- Add `transition: background-color 0.3s, color 0.3s` to `body` for smooth switching
+### 2. Create `src/hooks/useLanguage.tsx`
+- React Context + Provider with `lang` state (`"fr" | "en"`)
+- `toggleLanguage()` function
+- `t(key)` helper to retrieve translated string
+- Persists choice in `localStorage`
+- Defaults to `"fr"`
 
-### 3. Create `src/components/ThemeToggle.tsx`
-- Compact icon button using Sun/Moon icons from lucide-react
-- Animated icon swap (rotate + scale transition)
-- Styled to match navbar aesthetic: transparent bg, rounded, subtle hover
+### 3. Create `src/components/LanguageToggle.tsx`
+- Compact button styled like ThemeToggle (same size, border, rounded)
+- Displays `FR` or `EN` text with a smooth crossfade transition on toggle
+- Placed in the navbar between ThemeToggle and CTA
 
 ### 4. Update `src/components/Navbar.tsx`
-- Add ThemeToggle between the logo and CTA button
-- Update navbar bg for dark mode: `dark:bg-[rgba(10,30,22,0.9)]` and border color
+- Add LanguageToggle next to ThemeToggle
+- Replace hardcoded CTA text with `t('nav.cta')`
 
-### 5. Update `src/App.tsx`
-- Wrap app with ThemeProvider
+### 5. Update all content components
+Each component imports `useLanguage` and replaces hardcoded French strings with `t('key')` calls:
+- **HeroSection**: title, subtitle, badges, warning text, form header
+- **StatsBar**: labels
+- **WhySection**: section title, subtitle, card titles/descriptions
+- **ProgrammeSection**: section title, timeline items
+- **SpeakersSection**: section title, speaker roles/bios
+- **FaqSection**: section title, all Q&A pairs
+- **Footer**: footer text
+- **RegistrationForm**: labels, placeholders, error messages, button text, validation messages
+- **CountdownBlock**: labels (Jours→Days, etc.)
 
-### 6. Update hardcoded colors in components
-- Audit components using hardcoded light colors (navbar, hero, sections) and add `dark:` variants where needed for key surfaces and text
+### 6. Wrap app with LanguageProvider
+In `src/App.tsx`, wrap the app with `<LanguageProvider>` alongside the existing `<ThemeProvider>`.
+
+## Technical Details
+- No external dependencies — pure React Context
+- Translation dictionary is a flat object with dot-notation keys for fast lookup
+- Toggle persisted via `localStorage('lang')`
+- Button uses the same visual style as the existing ThemeToggle for consistency
+- All transitions are CSS-based for smooth UX
 
