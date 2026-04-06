@@ -3,6 +3,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts'
 
 const BodySchema = z.object({
   prenom: z.string().min(1).max(100),
