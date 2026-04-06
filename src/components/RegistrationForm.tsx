@@ -93,7 +93,7 @@ const RegistrationForm = () => {
 
       if (dbError) throw dbError;
 
-      const { error: functionError } = await supabase.functions.invoke('send-confirmation-email', {
+      const { data: fnData, error: functionError } = await supabase.functions.invoke('send-confirmation-email', {
         body: {
           prenom: form.prénom.trim(),
           email: form.email.trim(),
@@ -101,6 +101,12 @@ const RegistrationForm = () => {
       });
 
       if (functionError) {
+        // Check for rate limiting (429)
+        if (fnData?.error) {
+          setError(fnData.error);
+          setLoading(false);
+          return;
+        }
         console.error('Email function error:', functionError);
         toast({
           title: 'Inscription enregistrée',

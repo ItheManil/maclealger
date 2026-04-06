@@ -5,6 +5,36 @@ const corsHeaders = {
 
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts'
 
+// --- Rate Limiter ---
+const rateLimitMap = new Map<string, number[]>()
+
+function isRateLimited(key: string, maxRequests: number, windowMs: number): boolean {
+  const now = Date.now()
+  const timestamps = (rateLimitMap.get(key) || []).filter(t => now - t < windowMs)
+  if (timestamps.length >= maxRequests) {
+    rateLimitMap.set(key, timestamps)
+    return true
+  }
+  timestamps.push(now)
+  rateLimitMap.set(key, timestamps)
+  return false
+}
+
+// Cleanup old entries every 5 minutes
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, timestamps] of rateLimitMap) {
+    const filtered = timestamps.filter(t => now - t < 3600000)
+    if (filtered.length === 0) rateLimitMap.delete(key)
+    else rateLimitMap.set(key, filtered)
+  }
+}, 300000)
+
+const IP_LIMIT = 3
+const IP_WINDOW = 15 * 60 * 1000 // 15 min
+const EMAIL_LIMIT = 1
+const EMAIL_WINDOW = 60 * 60 * 1000 // 60 min
+
 const BodySchema = z.object({
   prenom: z.string().min(1).max(100),
   email: z.string().email().max(255),
@@ -16,6 +46,9 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+                     req.headers.get('x-real-ip') || 'unknown'
+
     const parsed = BodySchema.safeParse(await req.json())
     if (!parsed.success) {
       return new Response(
@@ -26,7 +59,22 @@ Deno.serve(async (req) => {
 
     const { prenom, email } = parsed.data
 
-    // Build the confirmation email HTML
+    // Check IP rate limit
+    if (isRateLimited(`ip:${clientIp}`, IP_LIMIT, IP_WINDOW)) {
+      return new Response(
+        JSON.stringify({ error: 'Trop de tentatives. Veuillez réessayer dans quelques minutes.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Check email rate limit
+    if (isRateLimited(`email:${email.toLowerCase()}`, EMAIL_LIMIT, EMAIL_WINDOW)) {
+      return new Response(
+        JSON.stringify({ error: 'Un email de confirmation a déjà été envoyé à cette adresse. Veuillez patienter.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const html = `
 <!DOCTYPE html>
 <html lang="fr">
@@ -61,8 +109,6 @@ Deno.serve(async (req) => {
 </body>
 </html>`
 
-    // Use Resend or log for now - we'll send via the Lovable email system
-    // For now, just log the email (the actual sending will happen when email domain is configured)
     console.log(`Confirmation email prepared for ${email}`)
 
     return new Response(
