@@ -153,9 +153,17 @@ const Index = () => {
           transform: translateY(-4px);
           box-shadow: 0 16px 40px rgba(0, 51, 38, 0.1);
         }
+
+        .lang-content {
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .lang-content.lang-fade-out {
+          opacity: 0;
+          transform: scale(0.99);
+        }
       `}</style>
       <Navbar />
-      <div ref={mainRef}>
+      <div ref={mainRef} className={`lang-content ${isTransitioning ? 'lang-fade-out' : ''}`}>
         <HeroSection />
         <StatsBar />
         <WhySection />
