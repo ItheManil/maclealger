@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 const countries = ['France', 'Canada', 'Belgique', 'Suisse', 'Royaume-Uni', 'Allemagne', 'Espagne', 'Italie', 'Etats-Unis', 'Autre'];
 
@@ -18,24 +19,63 @@ const interests = [
 
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({
     prénom: '', nom: '', email: '', tel: '', pays: '', projet: '', intérêt: '', rgpd: false,
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError('');
     if (!form.prénom.trim() || !form.nom.trim() || !form.email.trim()) {
-      alert('Merci de remplir votre prénom, nom et email.');
+      setError('Merci de remplir votre prénom, nom et email.');
       return;
     }
-    if (!form.email.includes('@')) {
-      alert('Adresse email invalide.');
+    if (!form.email.includes('@') || !form.email.includes('.')) {
+      setError('Adresse email invalide.');
       return;
     }
     if (!form.rgpd) {
-      alert("Merci d'accepter les conditions.");
+      setError("Merci d'accepter les conditions.");
       return;
     }
-    setSubmitted(true);
+
+    setLoading(true);
+    try {
+      const { error: dbError } = await supabase
+        .from('webinar_registrations')
+        .insert({
+          prenom: form.prénom.trim(),
+          nom: form.nom.trim(),
+          email: form.email.trim(),
+          telephone: form.tel.trim() || null,
+          pays: form.pays || null,
+          projet: form.projet || null,
+          interet: form.intérêt || null,
+        });
+
+      if (dbError) throw dbError;
+
+      // Send confirmation email
+      try {
+        await supabase.functions.invoke('send-confirmation-email', {
+          body: {
+            prenom: form.prénom.trim(),
+            email: form.email.trim(),
+          },
+        });
+      } catch {
+        // Email failure shouldn't block registration
+        console.warn('Confirmation email could not be sent');
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      setError("Une erreur est survenue. Veuillez réessayer.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass = "w-full py-[11px] px-[14px] bg-[var(--cream)] border border-[rgba(0,51,38,0.15)] rounded-[10px] text-sm text-[var(--sand)] outline-none transition-colors focus:border-[var(--gold)]";
@@ -54,6 +94,11 @@ const RegistrationForm = () => {
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {error}
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-3 max-[600px]:grid-cols-1">
         <div className="mb-4">
           <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Prénom *</label>
@@ -105,8 +150,12 @@ const RegistrationForm = () => {
         <input type="checkbox" className="shrink-0 accent-[var(--gold)] mt-0.5" checked={form.rgpd} onChange={(e) => setForm({ ...form, rgpd: e.target.checked })} />
         <span>J'accepte que mes informations soient utilisées par Oussama Promotion pour recevoir le lien Google Meet et les informations relatives a ce webinaire.</span>
       </div>
-      <button onClick={handleSubmit} className="w-full bg-[var(--sand)] text-white border-none rounded-xl py-[15px] text-[15px] font-medium cursor-pointer mt-5 transition-all hover:bg-[var(--gold)] hover:-translate-y-px">
-        Confirmér mon inscription →
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        className="w-full bg-[var(--sand)] text-white border-none rounded-xl py-[15px] text-[15px] font-medium cursor-pointer mt-5 transition-all hover:bg-[var(--gold)] hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {loading ? 'Inscription en cours...' : 'Confirmér mon inscription →'}
       </button>
     </div>
   );
