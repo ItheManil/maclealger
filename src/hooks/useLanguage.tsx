@@ -3,6 +3,7 @@ import translations, { type TranslationKey, type Lang } from '@/i18n/translation
 
 type LanguageContextType = {
   lang: Lang;
+  setLang: (lang: Lang) => void;
   toggleLanguage: () => void;
   t: (key: TranslationKey) => string;
   dir: 'ltr' | 'rtl';
@@ -30,6 +31,11 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     document.documentElement.setAttribute('lang', lang);
   }, [lang, dir]);
 
+  const setLangDirect = useCallback((newLang: Lang) => {
+    try { localStorage.setItem('lang', newLang); } catch {}
+    setLang(newLang);
+  }, []);
+
   const toggleLanguage = useCallback(() => {
     setLang((prev) => {
       const idx = LANG_CYCLE.indexOf(prev);
@@ -45,7 +51,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <LanguageContext.Provider value={{ lang, toggleLanguage, t, dir }}>
+    <LanguageContext.Provider value={{ lang, setLang: setLangDirect, toggleLanguage, t, dir }}>
       {children}
     </LanguageContext.Provider>
   );
