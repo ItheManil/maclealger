@@ -22,12 +22,12 @@ const CountdownBlock = () => {
         {blocks.map((b) => (
           <div
             key={b.label}
-            className="bg-[var(--sand)] rounded-xl px-4 py-3.5 text-center min-w-[64px] border border-[rgba(201,168,76,0.2)]"
+            className="bg-[var(--sand)] dark:bg-muted rounded-xl px-4 py-3.5 text-center min-w-[64px] border border-border transition-colors duration-300"
           >
             <span className="font-heading text-[28px] font-bold text-[var(--gold)] leading-none block">
               {b.value}
             </span>
-            <span className="text-[10px] text-white/50 mt-1 block tracking-[0.06em] uppercase">
+            <span className="text-[10px] text-primary-foreground/50 dark:text-muted-foreground mt-1 block tracking-[0.06em] uppercase">
               {b.label}
             </span>
           </div>
