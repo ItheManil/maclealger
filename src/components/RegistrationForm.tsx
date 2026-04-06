@@ -67,10 +67,9 @@ const RegistrationForm = () => {
   // Check remaining spots on mount
   useEffect(() => {
     supabase
-      .from('webinar_registrations')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count }) => {
-        if (count !== null) {
+      .rpc('get_registration_count')
+      .then(({ data: count, error: err }) => {
+        if (!err && count !== null) {
           const remaining = Math.max(0, MAX_PARTICIPANTS - count);
           setSpotsLeft(remaining);
           if (remaining === 0) setIsFull(true);
