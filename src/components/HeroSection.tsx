@@ -21,7 +21,7 @@ const HeroSection = () => (
     <div className="grid grid-cols-2 gap-[60px] items-center relative z-[1] w-full max-[900px]:grid-cols-1 max-[900px]:gap-10">
       {/* Left */}
       <div>
-        <div className="inline-flex items-center gap-2 bg-[var(--gold-pale)] border border-[rgba(0,51,38,0.2)] rounded-[40px] px-4 py-1.5 text-xs font-medium text-[var(--gold)] tracking-[0.06em] uppercase mb-7" style={{ animation: 'fadeUp 0.6s ease both' }}>
+        <div className="inline-flex items-center gap-2 bg-[var(--gold-pale)] border border-border rounded-[40px] px-4 py-1.5 text-xs font-medium text-[var(--gold)] tracking-[0.06em] uppercase mb-7" style={{ animation: 'fadeUp 0.6s ease both' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--gold)]" />
           Webinaire gratuit · 18 Avril 2026
         </div>
@@ -34,7 +34,7 @@ const HeroSection = () => (
         <div className="flex flex-wrap gap-6 mt-9 max-[600px]:gap-3.5" style={{ animation: 'fadeUp 0.6s 0.3s ease both' }}>
           {metaBadges.map((b) => (
             <div key={b.text} className="flex items-center gap-2.5 text-sm text-[var(--sand-mid)]">
-              <div className="w-[34px] h-[34px] rounded-full bg-[var(--gold-pale)] border border-[rgba(0,51,38,0.2)] flex items-center justify-center text-[15px]">
+              <div className="w-[34px] h-[34px] rounded-full bg-[var(--gold-pale)] border border-border flex items-center justify-center text-[15px]">
                 {b.icon}
               </div>
               {b.text}
@@ -48,7 +48,7 @@ const HeroSection = () => (
       </div>
 
       {/* Right - Form */}
-      <div id="inscription" className="bg-white rounded-[20px] p-8 max-[600px]:p-5 border border-[rgba(0,51,38,0.2)] relative z-[1]" style={{ animation: 'fadeUp 0.6s 0.2s ease both' }}>
+      <div id="inscription" className="bg-card rounded-[20px] p-8 max-[600px]:p-5 border border-border relative z-[1] transition-colors duration-300" style={{ animation: 'fadeUp 0.6s 0.2s ease both' }}>
         <h3 className="font-heading text-lg font-bold text-[var(--sand)] mb-1.5">Réserver ma place</h3>
         <p className="text-[13px] text-[var(--sand-soft)] mb-5">Gratuit · Lien Google Meet envoyé par email</p>
         <RegistrationForm />

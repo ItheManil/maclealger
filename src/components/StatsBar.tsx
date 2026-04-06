@@ -6,9 +6,9 @@ const stats = [
 ];
 
 const StatsBar = () => (
-  <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-px bg-[rgba(0,51,38,0.2)] border-y border-[rgba(0,51,38,0.2)]">
+  <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-px bg-border border-y border-border transition-colors duration-300">
     {stats.map((s) => (
-      <div key={s.num} className="reveal bg-[var(--cream)] py-9 px-8 text-center">
+      <div key={s.num} className="reveal bg-[var(--cream)] py-9 px-8 text-center transition-colors duration-300">
         <span className="font-heading text-[40px] font-bold text-[var(--gold)] leading-none block">{s.num}</span>
         <span className="text-[13px] text-[var(--sand-soft)] mt-1.5 block">{s.label}</span>
       </div>
