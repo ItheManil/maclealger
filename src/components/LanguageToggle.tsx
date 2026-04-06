@@ -1,10 +1,10 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import type { Lang } from '@/i18n/translations';
 
-const NEXT_LABEL: Record<Lang, string> = {
-  fr: 'EN',
-  en: 'عر',
-  ar: 'FR',
+const CURRENT_FLAG: Record<Lang, string> = {
+  fr: '🇫🇷',
+  en: '🇬🇧',
+  ar: '🇸🇦',
 };
 
 const ARIA_LABEL: Record<Lang, string> = {
