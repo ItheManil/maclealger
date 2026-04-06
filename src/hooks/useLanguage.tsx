@@ -31,6 +31,11 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     document.documentElement.setAttribute('lang', lang);
   }, [lang, dir]);
 
+  const setLangDirect = useCallback((newLang: Lang) => {
+    try { localStorage.setItem('lang', newLang); } catch {}
+    setLang(newLang);
+  }, []);
+
   const toggleLanguage = useCallback(() => {
     setLang((prev) => {
       const idx = LANG_CYCLE.indexOf(prev);
