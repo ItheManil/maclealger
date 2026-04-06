@@ -1,0 +1,1 @@
+ALTER TABLE public.webinar_registrations ADD CONSTRAINT webinar_registrations_email_unique UNIQUE (email);
