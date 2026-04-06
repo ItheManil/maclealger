@@ -115,6 +115,12 @@ const RegistrationForm = () => {
           setLoading(false);
           return;
         }
+        if (dbError.message?.includes('registration_full')) {
+          setIsFull(true);
+          setError('Désolé, les 50 places sont complètes. Inscrivez-vous à la liste d\'attente en nous contactant par email.');
+          setLoading(false);
+          return;
+        }
         throw dbError;
       }
 
