@@ -91,7 +91,14 @@ const RegistrationForm = () => {
         interet: form.intérêt || null,
       });
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        if (dbError.code === '23505') {
+          setError('Cette adresse email est déjà inscrite.');
+          setLoading(false);
+          return;
+        }
+        throw dbError;
+      }
 
       const { data: fnData, error: functionError } = await supabase.functions.invoke('send-confirmation-email', {
         body: {
