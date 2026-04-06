@@ -54,11 +54,29 @@ const initialForm: FormState = {
   rgpd: false,
 };
 
+const MAX_PARTICIPANTS = 50;
+
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState<FormState>(initialForm);
+  const [isFull, setIsFull] = useState(false);
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
+
+  // Check remaining spots on mount
+  useState(() => {
+    supabase
+      .from('webinar_registrations')
+      .select('id', { count: 'exact', head: true })
+      .then(({ count }) => {
+        if (count !== null) {
+          const remaining = Math.max(0, MAX_PARTICIPANTS - count);
+          setSpotsLeft(remaining);
+          if (remaining === 0) setIsFull(true);
+        }
+      });
+  });
 
   const handleSubmit = async () => {
     setError('');
@@ -94,6 +112,12 @@ const RegistrationForm = () => {
       if (dbError) {
         if (dbError.code === '23505') {
           setError('Cette adresse email est déjà inscrite.');
+          setLoading(false);
+          return;
+        }
+        if (dbError.message?.includes('registration_full')) {
+          setIsFull(true);
+          setError('Désolé, les 50 places sont complètes. Inscrivez-vous à la liste d\'attente en nous contactant par email.');
           setLoading(false);
           return;
         }
@@ -136,12 +160,25 @@ const RegistrationForm = () => {
     }
   };
 
+  if (isFull && !submitted) {
+    return (
+      <div className="text-center py-10 px-5">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-destructive bg-destructive/10 text-[26px]">🚫</div>
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">Complet !</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Les 50 places disponibles ont toutes été réservées.<br /><br />
+          Nous organiserons une prochaine session. Suivez-nous pour être informé(e) en priorité.
+        </p>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className="text-center py-10 px-5">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-primary bg-accent text-[26px] text-primary">✓</div>
-        <p className="mb-2.5 font-heading text-[22px] font-bold text-[var(--sand)]">Inscription confirmée !</p>
-        <p className="text-sm leading-relaxed text-[var(--sand-soft)]">
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">Inscription confirmée !</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Votre demande a bien été enregistrée.<br /><br />Vous recevrez votre lien Google Meet par email avant le <strong>18 avril 2026</strong>.
         </p>
       </div>
@@ -259,11 +296,16 @@ const RegistrationForm = () => {
 
       <Button
         onClick={handleSubmit}
-        disabled={loading}
+        disabled={loading || isFull}
         className="mt-2 w-full rounded-xl bg-secondary text-secondary-foreground hover:bg-primary"
       >
         {loading ? 'Inscription en cours...' : 'Confirmer mon inscription →'}
       </Button>
+      {spotsLeft !== null && spotsLeft > 0 && spotsLeft <= 10 && (
+        <p className="text-center text-xs text-[var(--gold)] font-medium">
+          🔥 Plus que {spotsLeft} place{spotsLeft > 1 ? 's' : ''} disponible{spotsLeft > 1 ? 's' : ''} !
+        </p>
+      )}
     </div>
   );
 };
