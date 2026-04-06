@@ -1,76 +1,121 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from '@/components/ui/use-toast';
 
 const countries = ['France', 'Canada', 'Belgique', 'Suisse', 'Royaume-Uni', 'Allemagne', 'Espagne', 'Italie', 'Etats-Unis', 'Autre'];
 
 const projectStages = [
   { value: 'réflex', label: 'Je réfléchis encore, pas décidé(e)' },
   { value: 'actif', label: 'Je cherche activement un bien' },
-  { value: 'pret', label: "Prêt(e) a acheter sous 6 mois" },
+  { value: 'pret', label: 'Prêt(e) à acheter sous 6 mois' },
   { value: 'vue', label: "J'ai déjà un bien en vue" },
 ];
 
 const interests = [
-  { value: 'légal', label: 'Le cadre légal et les demarchés notariales' },
+  { value: 'légal', label: 'Le cadre légal et les démarches notariales' },
   { value: 'marché', label: "Comprendre le marché immobilier à Alger" },
   { value: 'financement', label: "Le financement depuis l'étranger" },
-  { value: 'tout', label: 'Tout — je pars de zero' },
+  { value: 'tout', label: 'Tout — je pars de zéro' },
 ];
+
+type FormState = {
+  prénom: string;
+  nom: string;
+  email: string;
+  tel: string;
+  pays: string;
+  projet: string;
+  intérêt: string;
+  rgpd: boolean;
+};
+
+const initialForm: FormState = {
+  prénom: '',
+  nom: '',
+  email: '',
+  tel: '',
+  pays: '',
+  projet: '',
+  intérêt: '',
+  rgpd: false,
+};
 
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({
-    prénom: '', nom: '', email: '', tel: '', pays: '', projet: '', intérêt: '', rgpd: false,
-  });
+  const [form, setForm] = useState<FormState>(initialForm);
 
   const handleSubmit = async () => {
     setError('');
+
     if (!form.prénom.trim() || !form.nom.trim() || !form.email.trim()) {
       setError('Merci de remplir votre prénom, nom et email.');
       return;
     }
+
     if (!form.email.includes('@') || !form.email.includes('.')) {
       setError('Adresse email invalide.');
       return;
     }
+
     if (!form.rgpd) {
       setError("Merci d'accepter les conditions.");
       return;
     }
 
     setLoading(true);
+
     try {
-      const { error: dbError } = await supabase
-        .from('webinar_registrations')
-        .insert({
-          prenom: form.prénom.trim(),
-          nom: form.nom.trim(),
-          email: form.email.trim(),
-          telephone: form.tel.trim() || null,
-          pays: form.pays || null,
-          projet: form.projet || null,
-          interet: form.intérêt || null,
-        });
+      const { error: dbError } = await supabase.from('webinar_registrations').insert({
+        prenom: form.prénom.trim(),
+        nom: form.nom.trim(),
+        email: form.email.trim(),
+        telephone: form.tel.trim() || null,
+        pays: form.pays || null,
+        projet: form.projet || null,
+        interet: form.intérêt || null,
+      });
 
       if (dbError) throw dbError;
 
-      // Send confirmation email
-      try {
-        await supabase.functions.invoke('send-confirmation-email', {
-          body: {
-            prenom: form.prénom.trim(),
-            email: form.email.trim(),
-          },
+      const { error: functionError } = await supabase.functions.invoke('send-confirmation-email', {
+        body: {
+          prenom: form.prénom.trim(),
+          email: form.email.trim(),
+        },
+      });
+
+      if (functionError) {
+        console.error('Email function error:', functionError);
+        toast({
+          title: 'Inscription enregistrée',
+          description: "Votre inscription est bien enregistrée, mais l'email de confirmation n'a pas encore pu être envoyé.",
         });
-      } catch {
-        // Email failure shouldn't block registration
-        console.warn('Confirmation email could not be sent');
+      } else {
+        toast({
+          title: 'Inscription confirmée',
+          description: 'Votre inscription a bien été enregistrée.',
+        });
       }
 
       setSubmitted(true);
-    } catch (err: any) {
+      setForm(initialForm);
+    } catch (err) {
       console.error('Registration error:', err);
       setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
@@ -78,85 +123,134 @@ const RegistrationForm = () => {
     }
   };
 
-  const inputClass = "w-full py-[11px] px-[14px] bg-[var(--cream)] border border-[rgba(0,51,38,0.15)] rounded-[10px] text-sm text-[var(--sand)] outline-none transition-colors focus:border-[var(--gold)]";
-
   if (submitted) {
     return (
       <div className="text-center py-10 px-5">
-        <div className="w-16 h-16 rounded-full bg-[var(--gold-pale)] border border-[var(--gold)] flex items-center justify-center text-[26px] mx-auto mb-5">✓</div>
-        <p className="font-heading text-[22px] font-bold text-[var(--sand)] mb-2.5">Inscription confirmée !</p>
-        <p className="text-sm text-[var(--sand-soft)] leading-relaxed">
-          Vous recevrez votre lien Google Meet par email avant le <strong>18 avril 2026</strong>.<br /><br />À très bientôt !
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-primary bg-accent text-[26px] text-primary">✓</div>
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-[var(--sand)]">Inscription confirmée !</p>
+        <p className="text-sm leading-relaxed text-[var(--sand-soft)]">
+          Votre demande a bien été enregistrée.<br /><br />Vous recevrez votre lien Google Meet par email avant le <strong>18 avril 2026</strong>.
         </p>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
+
       <div className="grid grid-cols-2 gap-3 max-[600px]:grid-cols-1">
-        <div className="mb-4">
-          <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Prénom *</label>
-          <input className={inputClass} placeholder="Yasmine" value={form.prénom} onChange={(e) => setForm({ ...form, prénom: e.target.value })} />
+        <div className="space-y-2">
+          <Label htmlFor="prenom">Prénom *</Label>
+          <Input
+            id="prenom"
+            placeholder="Yasmine"
+            value={form.prénom}
+            onChange={(e) => setForm({ ...form, prénom: e.target.value })}
+          />
         </div>
-        <div className="mb-4">
-          <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Nom *</label>
-          <input className={inputClass} placeholder="Benali" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
+
+        <div className="space-y-2">
+          <Label htmlFor="nom">Nom *</Label>
+          <Input
+            id="nom"
+            placeholder="Benali"
+            value={form.nom}
+            onChange={(e) => setForm({ ...form, nom: e.target.value })}
+          />
         </div>
       </div>
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Email *</label>
-        <input className={inputClass} type="email" placeholder="vous@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+
+      <div className="space-y-2">
+        <Label htmlFor="email">Email *</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="vous@email.com"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
       </div>
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Téléphone (WhatsApp)</label>
-        <input className={inputClass} type="tel" placeholder="+33 6 ..." value={form.tel} onChange={(e) => setForm({ ...form, tel: e.target.value })} />
+
+      <div className="space-y-2">
+        <Label htmlFor="telephone">Téléphone (WhatsApp)</Label>
+        <Input
+          id="telephone"
+          type="tel"
+          placeholder="+33 6 ..."
+          value={form.tel}
+          onChange={(e) => setForm({ ...form, tel: e.target.value })}
+        />
       </div>
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Pays de résidence</label>
-        <select className={inputClass} value={form.pays} onChange={(e) => setForm({ ...form, pays: e.target.value })}>
-          <option value="">— Sélectionnez —</option>
-          {countries.map((c) => <option key={c}>{c}</option>)}
-        </select>
+
+      <div className="space-y-2">
+        <Label>Pays de résidence</Label>
+        <Select value={form.pays} onValueChange={(value) => setForm({ ...form, pays: value })}>
+          <SelectTrigger>
+            <SelectValue placeholder="— Sélectionnez —" />
+          </SelectTrigger>
+          <SelectContent>
+            {countries.map((country) => (
+              <SelectItem key={country} value={country}>
+                {country}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Où en êtes-vous dans votre projet ?</label>
-        <div className="flex flex-col gap-2 mt-1">
-          {projectStages.map((s) => (
-            <label key={s.value} className={`flex items-center gap-2.5 bg-[var(--cream)] border rounded-[10px] px-3.5 py-2.5 cursor-pointer text-[13px] text-[var(--sand-mid)] transition-all ${form.projet === s.value ? 'border-[var(--gold)] bg-[var(--gold-pale)]' : 'border-[rgba(0,51,38,0.12)]'}`}>
-              <input type="radio" name="projet" className="w-3.5 h-3.5 accent-[var(--gold)] shrink-0" checked={form.projet === s.value} onChange={() => setForm({ ...form, projet: s.value })} />
-              {s.label}
+
+      <div className="space-y-3">
+        <Label>Où en êtes-vous dans votre projet ?</Label>
+        <RadioGroup value={form.projet} onValueChange={(value) => setForm({ ...form, projet: value })} className="gap-2">
+          {projectStages.map((stage) => (
+            <label
+              key={stage.value}
+              className="flex cursor-pointer items-start gap-3 rounded-[10px] border border-input bg-background px-3.5 py-3 text-[13px] text-[var(--sand-mid)] transition-colors hover:bg-accent"
+            >
+              <RadioGroupItem value={stage.value} className="mt-0.5" />
+              <span>{stage.label}</span>
             </label>
           ))}
-        </div>
+        </RadioGroup>
       </div>
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-[var(--sand-soft)] mb-1.5 tracking-[0.03em] uppercase">Ce qui m'intéresse le plus</label>
-        <div className="flex flex-col gap-2 mt-1">
-          {interests.map((s) => (
-            <label key={s.value} className={`flex items-center gap-2.5 bg-[var(--cream)] border rounded-[10px] px-3.5 py-2.5 cursor-pointer text-[13px] text-[var(--sand-mid)] transition-all ${form.intérêt === s.value ? 'border-[var(--gold)] bg-[var(--gold-pale)]' : 'border-[rgba(0,51,38,0.12)]'}`}>
-              <input type="radio" name="intérêt" className="w-3.5 h-3.5 accent-[var(--gold)] shrink-0" checked={form.intérêt === s.value} onChange={() => setForm({ ...form, intérêt: s.value })} />
-              {s.label}
+
+      <div className="space-y-3">
+        <Label>Ce qui m'intéresse le plus</Label>
+        <RadioGroup value={form.intérêt} onValueChange={(value) => setForm({ ...form, intérêt: value })} className="gap-2">
+          {interests.map((interest) => (
+            <label
+              key={interest.value}
+              className="flex cursor-pointer items-start gap-3 rounded-[10px] border border-input bg-background px-3.5 py-3 text-[13px] text-[var(--sand-mid)] transition-colors hover:bg-accent"
+            >
+              <RadioGroupItem value={interest.value} className="mt-0.5" />
+              <span>{interest.label}</span>
             </label>
           ))}
-        </div>
+        </RadioGroup>
       </div>
-      <div className="flex gap-2.5 items-start text-xs text-[var(--sand-soft)] mt-4 leading-relaxed">
-        <input type="checkbox" className="shrink-0 accent-[var(--gold)] mt-0.5" checked={form.rgpd} onChange={(e) => setForm({ ...form, rgpd: e.target.checked })} />
-        <span>J'accepte que mes informations soient utilisées par Oussama Promotion pour recevoir le lien Google Meet et les informations relatives a ce webinaire.</span>
-      </div>
-      <button
+
+      <label className="flex items-start gap-3 text-xs leading-relaxed text-[var(--sand-soft)]">
+        <Checkbox
+          checked={form.rgpd}
+          onCheckedChange={(checked) => setForm({ ...form, rgpd: checked === true })}
+          className="mt-0.5"
+        />
+        <span>
+          J'accepte que mes informations soient utilisées par Oussama Promotion pour recevoir le lien Google Meet et les informations relatives à ce webinaire.
+        </span>
+      </label>
+
+      <Button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full bg-[var(--sand)] text-white border-none rounded-xl py-[15px] text-[15px] font-medium cursor-pointer mt-5 transition-all hover:bg-[var(--gold)] hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed"
+        className="mt-2 w-full rounded-xl bg-secondary text-secondary-foreground hover:bg-primary"
       >
-        {loading ? 'Inscription en cours...' : 'Confirmér mon inscription →'}
-      </button>
+        {loading ? 'Inscription en cours...' : 'Confirmer mon inscription →'}
+      </Button>
     </div>
   );
 };
