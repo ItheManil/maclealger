@@ -160,12 +160,25 @@ const RegistrationForm = () => {
     }
   };
 
+  if (isFull && !submitted) {
+    return (
+      <div className="text-center py-10 px-5">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-destructive bg-destructive/10 text-[26px]">🚫</div>
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">Complet !</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Les 50 places disponibles ont toutes été réservées.<br /><br />
+          Nous organiserons une prochaine session. Suivez-nous pour être informé(e) en priorité.
+        </p>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className="text-center py-10 px-5">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-primary bg-accent text-[26px] text-primary">✓</div>
-        <p className="mb-2.5 font-heading text-[22px] font-bold text-[var(--sand)]">Inscription confirmée !</p>
-        <p className="text-sm leading-relaxed text-[var(--sand-soft)]">
+        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">Inscription confirmée !</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Votre demande a bien été enregistrée.<br /><br />Vous recevrez votre lien Google Meet par email avant le <strong>18 avril 2026</strong>.
         </p>
       </div>
