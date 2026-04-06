@@ -20,10 +20,10 @@ const LanguageToggle = () => {
     <button
       onClick={toggleLanguage}
       aria-label={ARIA_LABEL[lang]}
-      className="relative w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent border border-border text-[11px] font-bold tracking-wide text-foreground uppercase active:scale-90"
+      className="relative w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent border border-border text-lg leading-none active:scale-90"
     >
       <span key={lang} className="animate-fade-in">
-        {NEXT_LABEL[lang]}
+        {CURRENT_FLAG[lang]}
       </span>
     </button>
   );
