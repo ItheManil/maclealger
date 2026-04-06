@@ -296,11 +296,16 @@ const RegistrationForm = () => {
 
       <Button
         onClick={handleSubmit}
-        disabled={loading}
+        disabled={loading || isFull}
         className="mt-2 w-full rounded-xl bg-secondary text-secondary-foreground hover:bg-primary"
       >
         {loading ? 'Inscription en cours...' : 'Confirmer mon inscription →'}
       </Button>
+      {spotsLeft !== null && spotsLeft > 0 && spotsLeft <= 10 && (
+        <p className="text-center text-xs text-[var(--gold)] font-medium">
+          🔥 Plus que {spotsLeft} place{spotsLeft > 1 ? 's' : ''} disponible{spotsLeft > 1 ? 's' : ''} !
+        </p>
+      )}
     </div>
   );
 };
