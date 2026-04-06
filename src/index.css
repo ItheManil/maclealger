@@ -44,6 +44,44 @@
     --sand-soft: #a08860;
     --cream: #F5FAF7;
   }
+
+  .dark {
+    --background: 163 40% 6%;
+    --foreground: 150 20% 90%;
+
+    --card: 163 35% 10%;
+    --card-foreground: 150 20% 85%;
+
+    --popover: 163 35% 10%;
+    --popover-foreground: 150 20% 85%;
+
+    --primary: 158 60% 55%;
+    --primary-foreground: 163 40% 6%;
+
+    --secondary: 31 25% 35%;
+    --secondary-foreground: 150 20% 90%;
+
+    --muted: 163 30% 12%;
+    --muted-foreground: 150 15% 60%;
+
+    --accent: 163 30% 15%;
+    --accent-foreground: 150 20% 90%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 150 20% 90% / 0.12;
+    --input: 150 20% 90% / 0.1;
+    --ring: 158 60% 55%;
+
+    --gold: #5BBFA0;
+    --gold-light: #7DD4B8;
+    --gold-pale: rgba(91, 191, 160, 0.12);
+    --sand: #D4C4A8;
+    --sand-mid: #B8A888;
+    --sand-soft: #C0AC90;
+    --cream: hsl(163, 40%, 6%);
+  }
 }
 
 @layer base {
@@ -57,6 +95,7 @@
     font-weight: 300;
     line-height: 1.7;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
