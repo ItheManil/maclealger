@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      webinar_registrations: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          interet: string | null
+          nom: string
+          pays: string | null
+          prenom: string
+          projet: string | null
+          telephone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          interet?: string | null
+          nom: string
+          pays?: string | null
+          prenom: string
+          projet?: string | null
+          telephone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          interet?: string | null
+          nom?: string
+          pays?: string | null
+          prenom?: string
+          projet?: string | null
+          telephone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
