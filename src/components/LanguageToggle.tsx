@@ -1,6 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import type { Lang } from '@/i18n/translations';
 
+
 const CURRENT_FLAG: Record<Lang, string> = {
   fr: '🇫🇷',
   en: '🇬🇧',
