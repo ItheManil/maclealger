@@ -97,11 +97,18 @@
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+  [dir="rtl"] body,
+  [lang="ar"] body {
+    font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif;
+  }
 }
 
 @layer utilities {
   .font-heading {
     font-family: 'Playfair Display', serif;
+  }
+  [dir="rtl"] .font-heading {
+    font-family: 'Noto Sans Arabic', serif;
   }
 }
 
