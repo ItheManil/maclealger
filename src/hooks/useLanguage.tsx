@@ -3,6 +3,7 @@ import translations, { type TranslationKey, type Lang } from '@/i18n/translation
 
 type LanguageContextType = {
   lang: Lang;
+  setLang: (lang: Lang) => void;
   toggleLanguage: () => void;
   t: (key: TranslationKey) => string;
   dir: 'ltr' | 'rtl';
