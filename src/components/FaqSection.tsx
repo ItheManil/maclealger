@@ -19,7 +19,7 @@ const FaqSection = () => {
         {faqs.map((faq, i) => (
           <div
             key={i}
-            className={`reveal group relative border-b border-border py-5 cursor-pointer text-left rounded-lg px-4 -mx-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-accent/50 hover:border-transparent ${openIndex === i ? 'bg-accent/30' : ''}`}
+            className={`group relative border-b border-border py-5 cursor-pointer text-left rounded-lg px-4 -mx-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-accent/50 hover:border-transparent ${openIndex === i ? 'bg-accent/30' : ''}`}
             onClick={() => setOpenIndex(openIndex === i ? null : i)}
           >
             <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-[var(--gold)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${openIndex === i ? 'h-3/4 opacity-100' : 'h-0 opacity-0 group-hover:h-1/2 group-hover:opacity-60'}`} />
