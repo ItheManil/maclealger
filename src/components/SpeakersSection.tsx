@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 
-const initials = ['J', 'I', 'M'];
+const initials = ['R', 'M', 'H'];
 
 const SpeakersSection = () => {
   const { t } = useLanguage();

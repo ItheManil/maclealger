@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 
-const times = ['18:00', '18:10', '18:30', '18:50', '19:05', '19:50'];
+const times = ['17:00', '17:10', '17:30', '17:50', '18:05', '18:50'];
 const durs = ['10 min', '20 min', '20 min', '15 min', '55 min', '10 min'];
 
 const ProgrammeSection = () => {
