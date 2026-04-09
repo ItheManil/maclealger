@@ -20,13 +20,13 @@ const CountdownBlock = () => {
       <span className="block text-[11px] font-medium text-[var(--gold)] tracking-[0.1em] uppercase mb-3">
         {t('countdown.label')}
       </span>
-      <div className="flex gap-2.5 flex-wrap">
+      <div className="flex gap-2 max-[600px]:gap-1.5 flex-wrap">
         {blocks.map((b) => (
           <div
             key={b.label}
-            className="bg-[var(--sand)] dark:bg-muted rounded-xl px-4 py-3.5 text-center min-w-[64px] border border-border transition-colors duration-300"
+            className="bg-[var(--sand)] dark:bg-muted rounded-xl px-3 py-2.5 max-[600px]:px-2.5 max-[600px]:py-2 text-center min-w-[56px] max-[600px]:min-w-[48px] border border-border transition-colors duration-300"
           >
-            <span className="font-heading text-[28px] font-bold text-[var(--gold)] leading-none block">
+            <span className="font-heading text-[24px] max-[600px]:text-[20px] font-bold text-[var(--gold)] leading-none block">
               {b.value}
             </span>
             <span className="text-[10px] text-primary-foreground/50 dark:text-muted-foreground mt-1 block tracking-[0.06em] uppercase">

@@ -11,11 +11,11 @@ const FaqSection = () => {
   }));
 
   return (
-    <section className="py-[90px] px-[5%] text-center" id="faq">
-      <div className="section-line h-px bg-border mx-auto mb-14" />
-      <span className="reveal-fade block text-[11px] font-medium text-[var(--gold)] tracking-[0.1em] uppercase mb-4 text-center">{t('faq.tag')}</span>
-      <h2 className="reveal-fade font-heading text-[clamp(28px,4vw,44px)] font-bold leading-[1.15] tracking-tight text-foreground mb-2 mx-auto">{t('faq.title')}</h2>
-      <div className="max-w-[680px] mx-auto mt-14">
+    <section className="py-[90px] max-[600px]:py-[50px] px-[5%] text-center" id="faq">
+      <div className="section-line h-px bg-border mx-auto mb-10 max-[600px]:mb-8" />
+      <span className="reveal-fade block text-[11px] font-medium text-[var(--gold)] tracking-[0.1em] uppercase mb-3 text-center">{t('faq.tag')}</span>
+      <h2 className="reveal-fade font-heading text-[clamp(24px,4vw,44px)] font-bold leading-[1.15] tracking-tight text-foreground mb-2 mx-auto">{t('faq.title')}</h2>
+      <div className="max-w-[680px] mx-auto mt-10 max-[600px]:mt-8">
         {faqs.map((faq, i) => (
           <div
             key={i}
