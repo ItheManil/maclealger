@@ -1,25 +1,40 @@
 
 
-# Language Toggle with Flag Icons
+# Mise à jour du contenu du site avec les nouvelles informations
 
-## What changes
-Replace the text labels (EN/FR/عر) in the language toggle button with country flag emojis:
-- 🇬🇧 for English
-- 🇫🇷 for French
-- 🇸🇦 for Arabic
+## Changements basés sur les images fournies
 
-## File to edit
+### 1. Mise à jour du Programme (translations + composant)
+**Nouvelles horaires et contenus :**
+- 17:00 (10 min) — Ouverture : Accueil et présentation du panel
+- 17:10 (20 min) — Architecte : Comprendre l'évolution des projets
+- 17:30 (20 min) — Expert Immobilier : Comprendre le marché et choisir son bien
+- 17:50 (15 min) — Table Ronde : Les bonnes pratiques pour acheter depuis l'étranger
+- 18:05 (55 min) — Questions / Réponses : Vos questions, en direct par chat
+- 18:50 (10 min) — Clôture : Synthèse et prochaines étapes
 
-### `src/components/LanguageToggle.tsx`
-- Replace `NEXT_LABEL` values with flag emojis: `{ fr: '🇬🇧', en: '🇫🇷', ar: '🇸🇦' }` — each shows the flag of the *next* language
-- Wait — currently the button shows the *next* language label. We should show the **current** language flag instead, so the user knows what language is active. Change to display the current language's flag: `{ fr: '🇫🇷', en: '🇬🇧', ar: '🇸🇦' }`
-- Increase emoji font size slightly (~16px) for visibility
-- Keep the existing button styling, animations, and `aria-label`
+Fichier `ProgrammeSection.tsx` : mettre à jour les tableaux `times` et `durs`.
 
-Actually, looking at the current logic: `NEXT_LABEL[lang]` shows what clicking will switch *to*. Let me reconsider — showing the current flag is more intuitive (users see which language is active). I'll display the **current** language flag and on click cycle to the next.
+### 2. Mise à jour des Intervenants (translations + composant)
+Remplacer les speakers génériques par les vrais noms :
+- **Bouabdallah Rania** — Modératrice / Conseillère immobilier
+- **Khatraoui Mohamed Oualid** — Modérateur / Responsable commercial
+- **Bourahla Houssemeddine** — Architecte
 
-### Changes summary
-- `NEXT_LABEL` → `CURRENT_FLAG`: `{ fr: '🇫🇷', en: '🇬🇧', ar: '🇸🇦' }`
-- Display `CURRENT_FLAG[lang]` instead of text
-- Bump the span font size to ~18px, remove `text-[11px]` and `uppercase` classes since they're irrelevant for emojis
+Fichier `SpeakersSection.tsx` : mettre à jour les initiales (R, M, H).
+
+### 3. Suppression des références "cadre légal / juridique"
+- **Why Section** : supprimer la carte "Comprendre le cadre légal" (why.card.0), la remplacer par une carte liée à l'architecture/projets
+- **Hero subtitle** : retirer "cadre légal" de la description
+- **Form interests** : remplacer "Le cadre légal et les démarches notariales" par quelque chose lié à l'architecture/projets
+- **Speaker 0** : n'est plus "Expert juridique" — devient l'architecte
+- **FAQ** : pas de mention juridique directe, pas de changement nécessaire
+
+### 4. Mise à jour des horaires globales
+- Hero badge time : "17h00 – 19h00" au lieu de "18h00 – 20h00"
+
+### Fichiers modifiés
+- `src/i18n/translations.ts` — toutes les traductions (FR, EN, AR)
+- `src/components/ProgrammeSection.tsx` — horaires et durées
+- `src/components/SpeakersSection.tsx` — initiales des speakers
 
