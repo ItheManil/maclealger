@@ -208,7 +208,7 @@ const translations = {
     ar: "يُغلق النموذج تلقائياً. إذا كنت في قائمة الانتظار، سنتواصل معك بالأولوية للجلسة القادمة.",
   },
   "faq.3.q": {
-    fr: "Le webinaire sera-t-il enregistre ?",
+    fr: "Le webinaire sera-t-il enregistré ?",
     en: "Will the webinar be recorded?",
     ar: "هل ستُسجل الندوة؟",
   },
