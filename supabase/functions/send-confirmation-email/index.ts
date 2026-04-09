@@ -75,6 +75,8 @@ Deno.serve(async (req) => {
       )
     }
 
+    const MEET_LINK = 'https://meet.google.com/kon-ekku-qke'
+
     const html = `
 <!DOCTYPE html>
 <html lang="fr">
@@ -92,14 +94,17 @@ Deno.serve(async (req) => {
     </p>
     <div style="background: #D6F0E5; border-radius: 12px; padding: 20px 24px; margin: 24px 0;">
       <p style="margin: 0 0 8px; font-size: 14px; color: #003326; font-weight: 500;">📅 Samedi 18 Avril 2026</p>
-      <p style="margin: 0 0 8px; font-size: 14px; color: #003326; font-weight: 500;">🕕 18h00 – 20h00 (heure de Paris)</p>
+      <p style="margin: 0 0 8px; font-size: 14px; color: #003326; font-weight: 500;">🕕 17h00 – 19h00 (heure de Paris)</p>
       <p style="margin: 0; font-size: 14px; color: #003326; font-weight: 500;">💻 Google Meet</p>
     </div>
-    <p style="font-size: 15px; color: #a08860; line-height: 1.7; margin: 0 0 16px;">
-      Vous recevrez votre <strong>lien Google Meet</strong> par email quelques jours avant l'événement.
+    <div style="text-align: center; margin: 28px 0;">
+      <a href="${MEET_LINK}" style="display: inline-block; background: #003326; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 32px; border-radius: 10px;">🎥 Rejoindre le webinaire</a>
+    </div>
+    <p style="font-size: 13px; color: #b8a080; text-align: center; margin: 0 0 16px;">
+      Lien direct : <a href="${MEET_LINK}" style="color: #003326;">${MEET_LINK}</a>
     </p>
     <p style="font-size: 15px; color: #a08860; line-height: 1.7; margin: 0 0 24px;">
-      En attendant, préparez vos questions — 55 minutes seront dédiées à vos interrogations en direct !
+      Préparez vos questions — 55 minutes seront dédiées à vos interrogations en direct !
     </p>
     <hr style="border: none; border-top: 1px solid rgba(0,51,38,0.1); margin: 24px 0;">
     <p style="font-size: 13px; color: #b8a080; text-align: center; margin: 0;">
