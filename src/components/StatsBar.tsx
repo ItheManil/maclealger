@@ -11,11 +11,11 @@ const StatsBar = () => {
   ];
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-px bg-border border-y border-border transition-colors duration-300">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] max-[600px]:grid-cols-2 gap-px bg-border border-y border-border transition-colors duration-300">
       {stats.map((s) => (
-        <div key={s.num} className="reveal bg-[var(--cream)] py-9 px-8 text-center transition-colors duration-300">
-          <span className="font-heading text-[40px] font-bold text-[var(--gold)] leading-none block">{s.num}</span>
-          <span className="text-[13px] text-[var(--sand-soft)] mt-1.5 block">{s.label}</span>
+        <div key={s.num} className="reveal bg-[var(--cream)] py-7 px-5 max-[600px]:py-5 max-[600px]:px-3 text-center transition-colors duration-300">
+          <span className="font-heading text-[36px] max-[600px]:text-[28px] font-bold text-[var(--gold)] leading-none block">{s.num}</span>
+          <span className="text-[12px] max-[600px]:text-[11px] text-[var(--sand-soft)] mt-1 block">{s.label}</span>
         </div>
       ))}
     </div>
