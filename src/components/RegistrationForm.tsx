@@ -40,28 +40,12 @@ const initialForm: FormState = {
   rgpd: false,
 };
 
-const MAX_PARTICIPANTS = 50;
-
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState<FormState>(initialForm);
-  const [isFull, setIsFull] = useState(false);
-  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
   const { t } = useLanguage();
-
-  useEffect(() => {
-    supabase
-      .rpc('get_registration_count')
-      .then(({ data: count, error: err }) => {
-        if (!err && count !== null) {
-          const remaining = Math.max(0, MAX_PARTICIPANTS - count);
-          setSpotsLeft(remaining);
-          if (remaining === 0) setIsFull(true);
-        }
-      });
-  }, []);
 
   const projectStages = [
     { value: 'réflex', label: t('form.projet.0') },
