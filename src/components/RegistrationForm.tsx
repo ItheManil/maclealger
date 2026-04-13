@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,28 +40,12 @@ const initialForm: FormState = {
   rgpd: false,
 };
 
-const MAX_PARTICIPANTS = 50;
-
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState<FormState>(initialForm);
-  const [isFull, setIsFull] = useState(false);
-  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
   const { t } = useLanguage();
-
-  useEffect(() => {
-    supabase
-      .rpc('get_registration_count')
-      .then(({ data: count, error: err }) => {
-        if (!err && count !== null) {
-          const remaining = Math.max(0, MAX_PARTICIPANTS - count);
-          setSpotsLeft(remaining);
-          if (remaining === 0) setIsFull(true);
-        }
-      });
-  }, []);
 
   const projectStages = [
     { value: 'réflex', label: t('form.projet.0') },
@@ -114,12 +98,6 @@ const RegistrationForm = () => {
           setLoading(false);
           return;
         }
-        if (dbError.message?.includes('registration_full')) {
-          setIsFull(true);
-          setError(t('form.error.full'));
-          setLoading(false);
-          return;
-        }
         throw dbError;
       }
 
@@ -158,15 +136,6 @@ const RegistrationForm = () => {
     }
   };
 
-  if (isFull && !submitted) {
-    return (
-      <div className="text-center py-10 px-5">
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-destructive bg-destructive/10 text-[26px]">🚫</div>
-        <p className="mb-2.5 font-heading text-[22px] font-bold text-foreground">{t('form.full.title')}</p>
-        <p className="text-sm leading-relaxed text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('form.full.desc') }} />
-      </div>
-    );
-  }
 
   if (submitted) {
     return (
@@ -178,9 +147,6 @@ const RegistrationForm = () => {
     );
   }
 
-  const spotsText = spotsLeft !== null && spotsLeft > 0 && spotsLeft <= 10
-    ? t('form.spots').replace('{n}', String(spotsLeft)).replace(/\{s\}/g, spotsLeft > 1 ? 's' : '')
-    : null;
 
   return (
     <div className="space-y-4">
@@ -290,16 +256,11 @@ const RegistrationForm = () => {
 
       <Button
         onClick={handleSubmit}
-        disabled={loading || isFull}
+        disabled={loading}
         className="mt-2 w-full rounded-xl bg-secondary text-secondary-foreground hover:bg-primary"
       >
         {loading ? t('form.loading') : t('form.submit')}
       </Button>
-      {spotsText && (
-        <p className="text-center text-xs text-[var(--gold)] font-medium">
-          🔥 {spotsText}
-        </p>
-      )}
     </div>
   );
 };
