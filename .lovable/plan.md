@@ -1,40 +1,30 @@
 
 
-# Mise à jour du contenu du site avec les nouvelles informations
+## Plan : Supprimer la limite de 50 inscriptions
 
-## Changements basés sur les images fournies
+### Ce qui change
+- Plus de limite de participants — les inscriptions restent ouvertes sans plafond.
+- Le formulaire n'affichera plus "complet" ni le compteur de places restantes.
 
-### 1. Mise à jour du Programme (translations + composant)
-**Nouvelles horaires et contenus :**
-- 17:00 (10 min) — Ouverture : Accueil et présentation du panel
-- 17:10 (20 min) — Architecte : Comprendre l'évolution des projets
-- 17:30 (20 min) — Expert Immobilier : Comprendre le marché et choisir son bien
-- 17:50 (15 min) — Table Ronde : Les bonnes pratiques pour acheter depuis l'étranger
-- 18:05 (55 min) — Questions / Réponses : Vos questions, en direct par chat
-- 18:50 (10 min) — Clôture : Synthèse et prochaines étapes
+### Étapes
 
-Fichier `ProgrammeSection.tsx` : mettre à jour les tableaux `times` et `durs`.
+#### 1. Migration base de données
+Supprimer le trigger et la fonction de vérification de limite :
+```sql
+DROP TRIGGER IF EXISTS enforce_registration_limit ON public.webinar_registrations;
+DROP FUNCTION IF EXISTS public.check_registration_limit();
+DROP FUNCTION IF EXISTS public.get_registration_count();
+```
 
-### 2. Mise à jour des Intervenants (translations + composant)
-Remplacer les speakers génériques par les vrais noms :
-- **Bouabdallah Rania** — Modératrice / Conseillère immobilier
-- **Khatraoui Mohamed Oualid** — Modérateur / Responsable commercial
-- **Bourahla Houssemeddine** — Architecte
+#### 2. Nettoyage du formulaire (`RegistrationForm.tsx`)
+- Supprimer la constante `MAX_PARTICIPANTS`
+- Supprimer les états `isFull` et `spotsLeft`
+- Supprimer le `useEffect` qui appelle `get_registration_count`
+- Supprimer le bloc d'affichage "complet" (quand `isFull && !submitted`)
+- Supprimer le texte "places restantes" (`spotsText`)
+- Retirer `isFull` de la condition `disabled` du bouton
 
-Fichier `SpeakersSection.tsx` : mettre à jour les initiales (R, M, H).
-
-### 3. Suppression des références "cadre légal / juridique"
-- **Why Section** : supprimer la carte "Comprendre le cadre légal" (why.card.0), la remplacer par une carte liée à l'architecture/projets
-- **Hero subtitle** : retirer "cadre légal" de la description
-- **Form interests** : remplacer "Le cadre légal et les démarches notariales" par quelque chose lié à l'architecture/projets
-- **Speaker 0** : n'est plus "Expert juridique" — devient l'architecte
-- **FAQ** : pas de mention juridique directe, pas de changement nécessaire
-
-### 4. Mise à jour des horaires globales
-- Hero badge time : "17h00 – 19h00" au lieu de "18h00 – 20h00"
-
-### Fichiers modifiés
-- `src/i18n/translations.ts` — toutes les traductions (FR, EN, AR)
-- `src/components/ProgrammeSection.tsx` — horaires et durées
-- `src/components/SpeakersSection.tsx` — initiales des speakers
+#### 3. Fichiers impactés
+- `supabase/migrations/` — nouvelle migration SQL
+- `src/components/RegistrationForm.tsx` — simplification du composant
 
