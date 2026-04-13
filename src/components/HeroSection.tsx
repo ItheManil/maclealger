@@ -9,7 +9,7 @@ const HeroSection = () => {
     { icon: '📅', text: t('hero.badge.date') },
     { icon: '🕕', text: t('hero.badge.time') },
     { icon: '💻', text: t('hero.badge.platform') },
-    { icon: '🎯', text: t('hero.badge.spots') },
+    
   ];
 
   return (
@@ -44,9 +44,6 @@ const HeroSection = () => {
             ))}
           </div>
           <CountdownBlock />
-          <p className="mt-5 text-xs text-[var(--gold)] flex items-center gap-1.5" style={{ animation: 'fadeUp 0.6s 0.45s ease both' }}>
-            {t('hero.warning')}
-          </p>
         </div>
 
         <div id="inscription" className="bg-card rounded-[20px] p-6 max-[600px]:p-4 border border-border relative z-[1] transition-colors duration-300" style={{ animation: 'fadeUp 0.6s 0.2s ease both' }}>
