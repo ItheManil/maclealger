@@ -1,30 +1,35 @@
 
 
-## Plan : Supprimer la limite de 50 inscriptions
+## Plan: AI-generated favicon for "Ma Clé à Alger"
 
-### Ce qui change
-- Plus de limite de participants — les inscriptions restent ouvertes sans plafond.
-- Le formulaire n'affichera plus "complet" ni le compteur de places restantes.
+### Concept
+A minimalist square icon combining a stylized **key** (Ma Clé) with a subtle architectural hint of **Algiers** (white casbah arch / Mediterranean blue). Designed to read clearly at 16×16, 32×32, and 180×180.
 
-### Étapes
+### Steps
 
-#### 1. Migration base de données
-Supprimer le trigger et la fonction de vérification de limite :
-```sql
-DROP TRIGGER IF EXISTS enforce_registration_limit ON public.webinar_registrations;
-DROP FUNCTION IF EXISTS public.check_registration_limit();
-DROP FUNCTION IF EXISTS public.get_registration_count();
-```
+1. **Generate the master image with Lovable AI** (Nano Banana Pro for crisp icon quality)
+   - Square 1024×1024 PNG, flat vector-style, transparent or solid brand-color background
+   - Prompt focused on: bold golden key silhouette, Mediterranean blue background, simple geometric arch motif, no text, centered, padded margins, app-icon style
 
-#### 2. Nettoyage du formulaire (`RegistrationForm.tsx`)
-- Supprimer la constante `MAX_PARTICIPANTS`
-- Supprimer les états `isFull` et `spotsLeft`
-- Supprimer le `useEffect` qui appelle `get_registration_count`
-- Supprimer le bloc d'affichage "complet" (quand `isFull && !submitted`)
-- Supprimer le texte "places restantes" (`spotsText`)
-- Retirer `isFull` de la condition `disabled` du bouton
+2. **Generate optimized favicon set** from the master:
+   - `public/favicon.ico` (multi-size: 16, 32, 48) — replaces existing default
+   - `public/favicon-32.png` (32×32)
+   - `public/favicon-192.png` (192×192, Android/PWA)
+   - `public/apple-touch-icon.png` (180×180, iOS)
+   - `public/favicon.svg` (lightweight vector version if achievable)
 
-#### 3. Fichiers impactés
-- `supabase/migrations/` — nouvelle migration SQL
-- `src/components/RegistrationForm.tsx` — simplification du composant
+3. **Update `index.html` `<head>`** with full favicon link set:
+   ```html
+   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+   ```
+
+4. **QA**: View each generated size at actual scale to confirm the icon stays legible at 16px (no blurry mess of details).
+
+### Files impacted
+- `public/favicon.ico` (overwrite)
+- `public/favicon-32.png`, `public/favicon-192.png`, `public/apple-touch-icon.png` (new)
+- `index.html` (add link tags)
 
