@@ -7,10 +7,10 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] px-3 sm:px-[5%] py-3 sm:py-[18px] flex items-center justify-between bg-[rgba(245,250,247,0.9)] dark:bg-[rgba(10,30,22,0.9)] backdrop-blur-[12px] border-b border-border transition-colors duration-300">
-      <a href="#" className="flex items-center gap-2 sm:gap-2.5 shrink-0 no-underline" aria-label="Ma Clé à Alger">
+      <a href="#" className="group flex items-center gap-2 sm:gap-2.5 shrink-0 no-underline" aria-label="Ma Clé à Alger">
         <svg
           viewBox="0 0 64 64"
-          className="w-6 h-6 sm:w-7 sm:h-7 text-secondary shrink-0"
+          className="w-6 h-6 sm:w-7 sm:h-7 text-secondary shrink-0 transition-transform duration-500 ease-out group-hover:rotate-[-15deg]"
           fill="currentColor"
           aria-hidden="true"
         >
