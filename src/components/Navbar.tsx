@@ -14,13 +14,21 @@ const Navbar = () => {
           fill="currentColor"
           aria-hidden="true"
         >
-          {/* Bow */}
-          <path d="M32 8a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm0 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10z" />
+          {/* Trefoil bow: 3 lobes + central circle, oval hole */}
+          <circle cx="32" cy="13" r="5.5" />
+          <circle cx="22" cy="19" r="5.5" />
+          <circle cx="42" cy="19" r="5.5" />
+          <circle cx="32" cy="20" r="10" />
+          <ellipse cx="32" cy="20" rx="3.5" ry="4.5" fill="hsl(var(--background))" />
+          {/* Decorative collar */}
+          <rect x="23.5" y="30.5" width="17" height="2.5" rx="0.5" />
           {/* Shaft */}
-          <rect x="29" y="30" width="6" height="24" rx="3" />
-          {/* Teeth */}
-          <rect x="29" y="42" width="10" height="4" rx="1.5" />
-          <rect x="29" y="49" width="8" height="4" rx="1.5" />
+          <rect x="29.5" y="33.5" width="5" height="20" rx="2.5" />
+          {/* Mid decorative ring */}
+          <rect x="25.5" y="42" width="13" height="2.5" rx="1.25" />
+          {/* Teeth (ornate bit) */}
+          <rect x="29.5" y="48" width="9" height="3" rx="0.8" />
+          <rect x="29.5" y="52.5" width="7" height="3" rx="0.8" />
         </svg>
         <span className="font-heading text-[15px] sm:text-[17px] font-bold text-foreground tracking-tight">
           Ma Clé <span className="text-primary">à Alger</span>
